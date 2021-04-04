@@ -166,7 +166,8 @@ func Connect(ctx context.Context, ch chan Response, channels, symbols []string, 
 			}
 
 			typeMsg, err := jsonparser.GetString(msg, "type")
-			if typeMsg == "error" {
+			if typeMsg == "error" || err != nil {
+				l.Println("got error", err)
 				l.Printf("[ERROR]: error: %+v", string(msg))
 				res.Type = ERROR
 				res.Results = fmt.Errorf("%v", string(msg))
@@ -282,7 +283,8 @@ func ConnectForPrivate(ctx context.Context, ch chan Response, key, secret string
 			}
 
 			typeMsg, err := jsonparser.GetString(msg, "type")
-			if typeMsg == "error" {
+			if typeMsg == "error" || err != nil {
+				l.Println("got error", err)
 				l.Printf("[ERROR]: error: %+v", string(msg))
 				res.Type = ERROR
 				res.Results = fmt.Errorf("%v", string(msg))
@@ -325,7 +327,7 @@ func ConnectForPrivate(ctx context.Context, ch chan Response, key, secret string
 
 			case "fills":
 				res.Type = FILLS
-				if err := json.Unmarshal(data, &res.Orders); err != nil {
+				if err := json.Unmarshal(data, &res.Fills); err != nil {
 					l.Printf("[WARN]: cant unmarshal fills %+v", err)
 					continue
 				}
